@@ -3,8 +3,11 @@
 </script>
 
 <main>
-  <h1>Hello you !</h1>
-  <h4>I'm an h4 too</h4>
+  <h1>Level up: Music brain</h1>
+  <h4>
+    This is a silly little quiz I built, just to practice the new Framework I'm
+    learning xxx
+  </h4>
   <Quiz />
 </main>
 
@@ -20,10 +23,5 @@
 
   h1 {
     color: #ff3e00;
-  }
-  /* This creates a global style for all components */
-  /* Global styles can be overwritten by component level styles that target the same el(s)  */
-  :global(h4) {
-    color: green;
   }
 </style>

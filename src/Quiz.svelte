@@ -1,7 +1,12 @@
 <script>
+  // Animation includes 'draw' which lets you draw an svg!!!
+  import { fade, blur, fly, slide, scale } from "svelte/transition";
   import Question from "./Question.svelte";
+  import App from "./App.svelte";
 
   let activeQuestion = 0;
+  let score = 0;
+  let quiz = getQuiz();
 
   async function getQuiz() {
     const res = await fetch(
@@ -12,30 +17,53 @@
     return quiz;
   }
 
-  let quiz = getQuiz();
-
-  function handleClick() {
-    quiz = getQuiz();
-  }
-
   function nextQuestion() {
     activeQuestion = activeQuestion + 1;
   }
+
+  function resetQuiz() {
+    score = 0;
+    activeQuestion = 0;
+    quiz = getQuiz();
+  }
+
+  function addToScore() {
+    score = score + 1;
+  }
+
+  // rEACTIVE STATEMENT
+  // '$:' Marks any statement as reactive in Svelte
+  $: if (score > 7) {
+    alert("You won");
+    resetQuiz();
+  }
+
+  // rEACTIVE DECLArATION
+  $: questionNumber = activeQuestion + 1;
 </script>
 
 <div>
-  <button on:click={handleClick}>Start new quiz</button>
+  <button on:click={resetQuiz}>Start new quiz</button>
 
-  <h3>My score: 0</h3>
-  <h4>Question #{activeQuestion + 1}</h4>
+  <h3>My score: {score}</h3>
+  <h4>Question #{questionNumber}</h4>
 
   {#await quiz}
     Loading...
   {:then data}
     {#each data.results as question, index}
       {#if index == activeQuestion}
-        <Question {nextQuestion} {question} />
+        <div in:fly={{ x: 100 }} out:fly={{ x: -200 }} class="fade-wrapper">
+          <!-- ??? How does passing these functions or props work at all !!! ??? -->
+          <Question {addToScore} {nextQuestion} {question} />
+        </div>
       {/if}
     {/each}
   {/await}
 </div>
+
+<style>
+  .fade-wrapper {
+    position: absolute;
+  }
+</style>

@@ -1,6 +1,8 @@
 <script>
+  // ??? Why are these props labelled export, they are first defined in another file (Quiz) ???
   export let question;
   export let nextQuestion;
+  export let addToScore;
 
   let isCorrect;
   let isAnswered = false;
@@ -27,8 +29,13 @@
   shuffle(allAnswers);
 
   function checkQuestion(correct) {
-    isCorrect = correct;
-    isAnswered = true;
+    if (!isAnswered) {
+      isAnswered = true;
+      isCorrect = correct;
+      if (correct) {
+        addToScore();
+      }
+    }
   }
 </script>
 
@@ -40,6 +47,7 @@
     >{@html answer.answer}</button
   >
 {/each}
+
 {#if isAnswered}
   <br />
   <button on:click={nextQuestion}>Next Question</button>

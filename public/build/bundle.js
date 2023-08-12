@@ -218,6 +218,47 @@ var app = (function () {
             throw new Error('Function called outside component initialization');
         return current_component;
     }
+    /**
+     * Schedules a callback to run immediately before the component is updated after any state change.
+     *
+     * The first time the callback runs will be before the initial `onMount`
+     *
+     * https://svelte.dev/docs#run-time-svelte-beforeupdate
+     */
+    function beforeUpdate(fn) {
+        get_current_component().$$.before_update.push(fn);
+    }
+    /**
+     * The `onMount` function schedules a callback to run as soon as the component has been mounted to the DOM.
+     * It must be called during the component's initialisation (but doesn't need to live *inside* the component;
+     * it can be called from an external module).
+     *
+     * `onMount` does not run inside a [server-side component](/docs#run-time-server-side-component-api).
+     *
+     * https://svelte.dev/docs#run-time-svelte-onmount
+     */
+    function onMount(fn) {
+        get_current_component().$$.on_mount.push(fn);
+    }
+    /**
+     * Schedules a callback to run immediately after the component has been updated.
+     *
+     * The first time the callback runs will be after the initial `onMount`
+     */
+    function afterUpdate(fn) {
+        get_current_component().$$.after_update.push(fn);
+    }
+    /**
+     * Schedules a callback to run immediately before the component is unmounted.
+     *
+     * Out of `onMount`, `beforeUpdate`, `afterUpdate` and `onDestroy`, this is the
+     * only one that runs inside a server-side component.
+     *
+     * https://svelte.dev/docs#run-time-svelte-ondestroy
+     */
+    function onDestroy(fn) {
+        get_current_component().$$.on_destroy.push(fn);
+    }
 
     const dirty_components = [];
     const binding_callbacks = [];
@@ -755,6 +796,10 @@ var app = (function () {
         else
             dispatch_dev('SvelteDOMSetAttribute', { node, attribute, value });
     }
+    function prop_dev(node, property, value) {
+        node[property] = value;
+        dispatch_dev('SvelteDOMSetProperty', { node, property, value });
+    }
     function set_data_dev(text, data) {
         data = '' + data;
         if (text.data === data)
@@ -913,6 +958,7 @@ var app = (function () {
     	const block = {
     		c: function create() {
     			button = element("button");
+    			button.disabled = /*isAnswered*/ ctx[3];
     			add_location(button, file$2, 45, 2, 850);
     		},
     		m: function mount(target, anchor) {
@@ -926,6 +972,10 @@ var app = (function () {
     		},
     		p: function update(new_ctx, dirty) {
     			ctx = new_ctx;
+
+    			if (dirty & /*isAnswered*/ 8) {
+    				prop_dev(button, "disabled", /*isAnswered*/ ctx[3]);
+    			}
     		},
     		d: function destroy(detaching) {
     			if (detaching) detach_dev(button);
@@ -959,8 +1009,8 @@ var app = (function () {
     			t0 = space();
     			button = element("button");
     			button.textContent = "Next Question";
-    			add_location(br, file$2, 51, 2, 972);
-    			add_location(button, file$2, 52, 2, 981);
+    			add_location(br, file$2, 51, 2, 994);
+    			add_location(button, file$2, 52, 2, 1003);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, br, anchor);
@@ -1009,6 +1059,8 @@ var app = (function () {
     // (56:0) {#if isAnswered}
     function create_if_block$1(ctx) {
     	let h4;
+    	let t;
+    	let h4_class_value;
 
     	function select_block_type(ctx, dirty) {
     		if (/*isCorrect*/ ctx[2]) return create_if_block_1;
@@ -1021,11 +1073,14 @@ var app = (function () {
     	const block = {
     		c: function create() {
     			h4 = element("h4");
+    			t = text("Alternatively, Shorthand 'class directive' syntax, if the class name and\n    value a\n    \n    ");
     			if_block.c();
-    			add_location(h4, file$2, 56, 2, 1062);
+    			attr_dev(h4, "class", h4_class_value = /*isCorrect*/ ctx[2] ? "correct" : "");
+    			add_location(h4, file$2, 56, 2, 1084);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, h4, anchor);
+    			append_dev(h4, t);
     			if_block.m(h4, null);
     		},
     		p: function update(ctx, dirty) {
@@ -1037,6 +1092,10 @@ var app = (function () {
     					if_block.c();
     					if_block.m(h4, null);
     				}
+    			}
+
+    			if (dirty & /*isCorrect*/ 4 && h4_class_value !== (h4_class_value = /*isCorrect*/ ctx[2] ? "correct" : "")) {
+    				attr_dev(h4, "class", h4_class_value);
     			}
     		},
     		d: function destroy(detaching) {
@@ -1056,13 +1115,13 @@ var app = (function () {
     	return block;
     }
 
-    // (60:4) {:else}
+    // (63:4) {:else}
     function create_else_block(ctx) {
     	let t;
 
     	const block = {
     		c: function create() {
-    			t = text("Try again");
+    			t = text("That's gotta be a no from me dog");
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, t, anchor);
@@ -1076,20 +1135,20 @@ var app = (function () {
     		block,
     		id: create_else_block.name,
     		type: "else",
-    		source: "(60:4) {:else}",
+    		source: "(63:4) {:else}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (58:4) {#if isCorrect}
+    // (61:4) {#if isCorrect}
     function create_if_block_1(ctx) {
     	let t;
 
     	const block = {
     		c: function create() {
-    			t = text("You nailed it big boi");
+    			t = text("Hell yeah dude");
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, t, anchor);
@@ -1103,7 +1162,7 @@ var app = (function () {
     		block,
     		id: create_if_block_1.name,
     		type: "if",
-    		source: "(58:4) {#if isCorrect}",
+    		source: "(61:4) {#if isCorrect}",
     		ctx
     	});
 
@@ -1166,7 +1225,7 @@ var app = (function () {
     		},
     		p: function update(ctx, [dirty]) {
     			if (dirty & /*question*/ 1 && raw_value !== (raw_value = /*question*/ ctx[0].question + "")) h3.innerHTML = raw_value;
-    			if (dirty & /*checkQuestion, allAnswers*/ 48) {
+    			if (dirty & /*isAnswered, checkQuestion, allAnswers*/ 56) {
     				each_value = /*allAnswers*/ ctx[4];
     				validate_each_argument(each_value);
     				let i;
@@ -1422,7 +1481,7 @@ var app = (function () {
     	return block;
     }
 
-    // (53:2) {:then data}
+    // (72:2) {:then data}
     function create_then_block(ctx) {
     	let each_1_anchor;
     	let current;
@@ -1513,14 +1572,14 @@ var app = (function () {
     		block,
     		id: create_then_block.name,
     		type: "then",
-    		source: "(53:2) {:then data}",
+    		source: "(72:2) {:then data}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (55:6) {#if index == activeQuestion}
+    // (74:6) {#if index == activeQuestion}
     function create_if_block(ctx) {
     	let div;
     	let question;
@@ -1544,7 +1603,7 @@ var app = (function () {
     			create_component(question.$$.fragment);
     			t = space();
     			attr_dev(div, "class", "fade-wrapper svelte-jb84hu");
-    			add_location(div, file$1, 55, 8, 1223);
+    			add_location(div, file$1, 74, 8, 1687);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div, anchor);
@@ -1587,14 +1646,14 @@ var app = (function () {
     		block,
     		id: create_if_block.name,
     		type: "if",
-    		source: "(55:6) {#if index == activeQuestion}",
+    		source: "(74:6) {#if index == activeQuestion}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (54:4) {#each data.results as question, index}
+    // (73:4) {#each data.results as question, index}
     function create_each_block(ctx) {
     	let if_block_anchor;
     	let current;
@@ -1653,14 +1712,14 @@ var app = (function () {
     		block,
     		id: create_each_block.name,
     		type: "each",
-    		source: "(54:4) {#each data.results as question, index}",
+    		source: "(73:4) {#each data.results as question, index}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (51:15)      Loading...   {:then data}
+    // (70:15)      Loading...   {:then data}
     function create_pending_block(ctx) {
     	let t;
 
@@ -1683,7 +1742,7 @@ var app = (function () {
     		block,
     		id: create_pending_block.name,
     		type: "pending",
-    		source: "(51:15)      Loading...   {:then data}",
+    		source: "(70:15)      Loading...   {:then data}",
     		ctx
     	});
 
@@ -1736,10 +1795,10 @@ var app = (function () {
     			t6 = text(/*questionNumber*/ ctx[3]);
     			t7 = space();
     			info.block.c();
-    			add_location(button, file$1, 45, 2, 967);
-    			add_location(h3, file$1, 47, 2, 1023);
-    			add_location(h4, file$1, 48, 2, 1052);
-    			add_location(div, file$1, 44, 0, 959);
+    			add_location(button, file$1, 64, 2, 1431);
+    			add_location(h3, file$1, 66, 2, 1487);
+    			add_location(h4, file$1, 67, 2, 1516);
+    			add_location(div, file$1, 63, 0, 1423);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -1825,6 +1884,21 @@ var app = (function () {
     	let score = 0;
     	let quiz = getQuiz();
 
+    	// LIFECYCYLE METHODS ////////////////////////////////////////
+    	// Fires after a component has mounted
+    	// Is rendered on the client side
+    	onMount(() => {
+    		console.log("I mounted");
+    	});
+
+    	beforeUpdate(() => {
+    		console.log("before update");
+    	});
+
+    	afterUpdate(() => {
+    		console.log("after update");
+    	});
+
     	function nextQuestion() {
     		$$invalidate(0, activeQuestion = activeQuestion + 1);
     	}
@@ -1851,6 +1925,10 @@ var app = (function () {
     		fly,
     		slide,
     		scale,
+    		onMount,
+    		beforeUpdate,
+    		afterUpdate,
+    		onDestroy,
     		Question,
     		App,
     		activeQuestion,

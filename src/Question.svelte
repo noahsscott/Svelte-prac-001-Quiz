@@ -43,7 +43,7 @@
 
 {#each allAnswers as answer}
   <!-- ??? How does @html work ??? -->
-  <button on:click={() => checkQuestion(answer.correct)}
+  <button disabled={isAnswered} on:click={() => checkQuestion(answer.correct)}
     >{@html answer.answer}</button
   >
 {/each}
@@ -54,11 +54,14 @@
 {/if}
 
 {#if isAnswered}
-  <h4>
+  <h4 class={isCorrect ? "correct" : ""}>
+    Alternatively, Shorthand 'class directive' syntax, if the class name and
+    value a
+    <!-- <h4 class={isCorrect ? "correct-answer" : "incorrect-answer"}> -->
     {#if isCorrect}
-      You nailed it big boi
+      Hell yeah dude
     {:else}
-      Try again
+      That's gotta be a no from me dog
     {/if}
   </h4>
 {/if}

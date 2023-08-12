@@ -1,12 +1,31 @@
 <script>
   // Animation includes 'draw' which lets you draw an svg!!!
   import { fade, blur, fly, slide, scale } from "svelte/transition";
+  import { onMount, beforeUpdate, afterUpdate, onDestroy } from "svelte";
   import Question from "./Question.svelte";
   import App from "./App.svelte";
 
   let activeQuestion = 0;
   let score = 0;
   let quiz = getQuiz();
+
+  // LIFECYCYLE METHODS ////////////////////////////////////////
+
+  // Fires after a component has mounted
+  // Is rendered on the client side
+  onMount(() => {
+    console.log("I mounted");
+  });
+
+  beforeUpdate(() => {
+    console.log("before update");
+  });
+
+  afterUpdate(() => {
+    console.log("after update");
+  });
+
+  //////////////////////////////////////////////////////////////
 
   async function getQuiz() {
     const res = await fetch(

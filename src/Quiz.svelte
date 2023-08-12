@@ -54,7 +54,7 @@
 
   // rEACTIVE STATEMENT
   // '$:' Marks any statement as reactive in Svelte
-  $: if (score > 0) {
+  $: if (score > 7) {
     isModalOpen = true;
   }
 

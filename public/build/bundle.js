@@ -2535,7 +2535,7 @@ var app = (function () {
     		if ($$self.$$.dirty & /*score*/ 2) {
     			// rEACTIVE STATEMENT
     			// '$:' Marks any statement as reactive in Svelte
-    			if (score > 0) {
+    			if (score > 7) {
     				$$invalidate(3, isModalOpen = true);
     			}
     		}

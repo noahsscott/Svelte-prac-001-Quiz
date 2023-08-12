@@ -3,11 +3,12 @@
   import { fade, blur, fly, slide, scale } from "svelte/transition";
   import { onMount, beforeUpdate, afterUpdate, onDestroy } from "svelte";
   import Question from "./Question.svelte";
-  import App from "./App.svelte";
+  import Modal from "./Modal.svelte";
 
   let activeQuestion = 0;
   let score = 0;
   let quiz = getQuiz();
+  let isModalOpen = false;
 
   // LIFECYCYLE METHODS ////////////////////////////////////////
 
@@ -41,6 +42,7 @@
   }
 
   function resetQuiz() {
+    isModalOpen = false;
     score = 0;
     activeQuestion = 0;
     quiz = getQuiz();
@@ -52,9 +54,8 @@
 
   // rEACTIVE STATEMENT
   // '$:' Marks any statement as reactive in Svelte
-  $: if (score > 7) {
-    alert("You won");
-    resetQuiz();
+  $: if (score > 0) {
+    isModalOpen = true;
   }
 
   // rEACTIVE DECLArATION
@@ -80,6 +81,15 @@
     {/each}
   {/await}
 </div>
+
+{#if isModalOpen}
+  <!-- The close event is defined in Modal as 'closeModal' and connected here to the component instance -->
+  <Modal on:closeModal={resetQuiz}>
+    <h2>Congratulations big boi</h2>
+    <p>You won a nude egg</p>
+    <button on:click={resetQuiz}>Try a new quiz</button>
+  </Modal>
+{/if}
 
 <style>
   .fade-wrapper {

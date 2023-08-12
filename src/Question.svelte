@@ -54,14 +54,30 @@
 {/if}
 
 {#if isAnswered}
-  <h4 class={isCorrect ? "correct" : ""}>
-    Alternatively, Shorthand 'class directive' syntax, if the class name and
-    value a
+  <!-- Apply the class "correct" if "isCorrect" is true, else default style applies -->
+  <h5 class:isCorrect class:isWrong={!isCorrect}>
+    <!-- Alternatively, Shorthand 'class directive' syntax, if the class name and
+    value are the same as above  -->
+    <!-- Or more verbose if you want the class name and variable value are different as below -->
     <!-- <h4 class={isCorrect ? "correct-answer" : "incorrect-answer"}> -->
     {#if isCorrect}
       Hell yeah dude
     {:else}
       That's gotta be a no from me dog
     {/if}
-  </h4>
+  </h5>
 {/if}
+
+<style>
+  h5 {
+    color: black;
+  }
+
+  h5.isWrong {
+    color: red;
+  }
+
+  h5.isCorrect {
+    color: green;
+  }
+</style>

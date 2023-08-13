@@ -1721,9 +1721,9 @@ var app = (function () {
     			t1 = space();
     			if (default_slot) default_slot.c();
     			add_location(button, file$2, 13, 4, 426);
-    			attr_dev(div0, "class", "modal svelte-fob62e");
+    			attr_dev(div0, "class", "modal svelte-jwfync");
     			add_location(div0, file$2, 12, 2, 374);
-    			attr_dev(div1, "class", "modal-bg svelte-fob62e");
+    			attr_dev(div1, "class", "modal-bg svelte-jwfync");
     			add_render_callback(() => /*div1_elementresize_handler*/ ctx[5].call(div1));
     			add_location(div1, file$2, 11, 0, 312);
     		},
@@ -2535,7 +2535,7 @@ var app = (function () {
     		if ($$self.$$.dirty & /*score*/ 2) {
     			// rEACTIVE STATEMENT
     			// '$:' Marks any statement as reactive in Svelte
-    			if (score > 7) {
+    			if (score > 0) {
     				$$invalidate(3, isModalOpen = true);
     			}
     		}
@@ -2668,10 +2668,10 @@ var app = (function () {
     }
 
     const app = new App({
-    	target: document.body,
-    	props: {
-    		name: 'world'
-    	}
+      target: document.body,
+      props: {
+        name: "world",
+      },
     });
 
     return app;

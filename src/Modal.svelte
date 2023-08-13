@@ -23,7 +23,7 @@
   </div>
 </div>
 
-<style>
+<style lang="scss">
   .modal-bg {
     position: fixed;
     top: 0;

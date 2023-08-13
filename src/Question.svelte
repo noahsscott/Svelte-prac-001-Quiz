@@ -1,8 +1,8 @@
 <script>
+  import { score } from "./store.js";
   // ??? Why are these props labelled export, they are first defined in another file (Quiz) ???
   export let question;
   export let nextQuestion;
-  export let addToScore;
 
   let isCorrect;
   let isAnswered = false;
@@ -33,7 +33,9 @@
       isAnswered = true;
       isCorrect = correct;
       if (correct) {
-        addToScore();
+        score.update((val) => {
+          return val + 1;
+        });
       }
     }
   }
@@ -43,8 +45,10 @@
 
 {#each allAnswers as answer}
   <!-- ??? How does @html work ??? -->
-  <button disabled={isAnswered} on:click={() => checkQuestion(answer.correct)}
-    >{@html answer.answer}</button
+  <button
+    class="answer"
+    disabled={isAnswered}
+    on:click={() => checkQuestion(answer.correct)}>{@html answer.answer}</button
   >
 {/each}
 
@@ -79,5 +83,9 @@
 
   h5.isCorrect {
     color: green;
+  }
+
+  .answer {
+    display: block;
   }
 </style>
